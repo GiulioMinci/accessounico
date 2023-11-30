@@ -1,0 +1,42 @@
+import os
+import requests
+from bs4 import BeautifulSoup
+from xml.etree import ElementTree as ET
+
+# Ottiene link
+def get_links_from_page(url):
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, 'html.parser')
+    links = [a.get('href') for a in soup.find_all('a', href=True)]
+    return links
+
+# Aggiorna
+def update_sitemap(base_url, sitemap_path):
+    sitemap_file = os.path.join(sitemap_path, 'sitemap.xml')
+    
+    # Verifica se c'è sitemap
+    if os.path.exists(sitemap_file):
+        tree = ET.parse(sitemap_file)
+        root = tree.getroot()
+    else:
+        # Se il file non esiste, crea una nuova sitemap XML
+        root = ET.Element('urlset')
+        root.set('xmlns', 'http://www.sitemaps.org/schemas/sitemap/0.9')
+
+    # Aggiunge
+    new_links = get_links_from_page(base_url)
+    for link in new_links:
+        if link is not None and link not in [url.text for url in root.findall('.//loc')]:
+            url_element = ET.SubElement(root, 'url')
+            loc_element = ET.SubElement(url_element, 'loc')
+            loc_element.text = link
+
+    # Salvaa
+    tree = ET.ElementTree(root)
+    tree.write(sitemap_file)
+
+if __name__ == '__main__':
+    base_url = 'https://www.accessounico.regione.umbria.it'
+    sitemap_path = 'Il path della sitemap qui'
+
+    update_sitemap(base_url, sitemap_path)
