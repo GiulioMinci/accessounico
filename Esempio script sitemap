@@ -1,3 +1,4 @@
+#python script con BeautifulSoup e ElementTree
 import os
 import requests
 from bs4 import BeautifulSoup
