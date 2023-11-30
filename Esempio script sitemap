@@ -15,7 +15,7 @@ def get_links_from_page(url):
 def update_sitemap(base_url, sitemap_path):
     sitemap_file = os.path.join(sitemap_path, 'sitemap.xml')
     
-    # Verifica se c'è sitemap
+    # Verifia se c'è sitemap
     if os.path.exists(sitemap_file):
         tree = ET.parse(sitemap_file)
         root = tree.getroot()
